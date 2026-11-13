@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Simulación - Línea de Ensamblaje (ED)</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Panel Interactivo: Desgaste de Motores e Inventario</h1>
+    <p>Modelo de Ecuaciones Diferenciales: <code>dE/dt = -kE + m(1 - E)</code> | <code>dI/dt = P<sub>máx</sub>E(t) - D</code></p>
+  </header>
+
+  <main class="container">
+    <!-- Panel de Controles -->
+    <section class="card controls">
+      <h2>Parámetros del Modelo</h2>
+
+      <div class="control-group">
+        <label for="pmax">Producción máxima (P<sub>máx</sub>): <span id="val-pmax">100</span> u/día</label>
+        <input type="range" id="pmax" min="50" max="200" step="5" value="100" />
+      </div>
+
+      <div class="control-group">
+        <label for="demand">Demanda constante (D): <span id="val-demand">70</span> u/día</label>
+        <input type="range" id="demand" min="20" max="150" step="5" value="70" />
+      </div>
+
+      <div class="control-group">
+        <label for="k">Tasa de desgaste (k): <span id="val-k">0.050</span> día⁻¹</label>
+        <input type="range" id="k" min="0.01" max="0.20" step="0.005" value="0.05" />
+      </div>
+
+      <div class="control-group">
+        <label for="m">Tasa de mantenimiento (m): <span id="val-m">0.120</span> día⁻¹</label>
+        <input type="range" id="m" min="0" max="0.40" step="0.005" value="0.12" />
+      </div>
+
+      <div class="control-group">
+        <label for="i0">Inventario inicial (I<sub>0</sub>): <span id="val-i0">200</span> u</label>
+        <input type="range" id="i0" min="0" max="500" step="10" value="200" />
+      </div>
+
+      <div class="control-group">
+        <label for="tmax">Horizonte de simulación (t<sub>máx</sub>): <span id="val-tmax">40</span> días</label>
+        <input type="range" id="tmax" min="10" max="100" step="5" value="40" />
+      </div>
+
+      <div class="presets">
+        <button id="btn-no-maint" class="btn secondary">Escenario sin mantenimiento (m = 0)</button>
+        <button id="btn-default" class="btn primary">Restaurar ejemplo (m = 0.12)</button>
+      </div>
+    </section>
+
+    <!-- Indicadores y Alertas -->
+    <section class="metrics-and-charts">
+      <div id="alert-box" class="alert ok">
+        <strong>Estado del Sistema:</strong> Calculando...
+      </div>
+
+      <div class="kpis">
+        <div class="kpi-card">
+          <span class="kpi-title">Mantenimiento Mínimo (m<sub>mín</sub>)</span>
+          <span class="kpi-value" id="kpi-mmin">--</span>
+          <span class="kpi-sub">día⁻¹ requerido para sostener D</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-title">Eficiencia Estacionaria (E*)</span>
+          <span class="kpi-value" id="kpi-estar">--</span>
+          <span class="kpi-sub">Prod. estacionaria: <strong id="kpi-pstar">--</strong> u/día</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-title">Inicio Cuello de Botella (t*)</span>
+          <span class="kpi-value" id="kpi-tstar">--</span>
+          <span class="kpi-sub">Instante donde P<sub>máx</sub>E(t) = D</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-title">Inventario Final I(t<sub>máx</sub>)</span>
+          <span class="kpi-value" id="kpi-ifinal">--</span>
+          <span class="kpi-sub">Unidades al cierre</span>
+        </div>
+      </div>
+
+      <!-- Gráficas -->
+      <div class="charts-grid">
+        <div class="card chart-card">
+          <h3>Evolución de la Eficiencia E(t)</h3>
+          <canvas id="chartE"></canvas>
+        </div>
+        <div class="card chart-card">
+          <h3>Evolución del Inventario I(t)</h3>
+          <canvas id="chartI"></canvas>
+        </div>
+      </div>
+
+      <!-- Tabla de Resultados -->
+      <div class="card table-card">
+        <h3>Tabla de Valores Simulados</h3>
+        <div class="table-wrapper">
+          <table id="results-table">
+            <thead>
+              <tr>
+                <th>t (días)</th>
+                <th>Eficiencia E(t)</th>
+                <th>Prod. Efectiva P<sub>máx</sub>E(t)</th>
+                <th>Inventario I(t) (u)</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Simulación Numérica y Analítica • Ingeniería de Sistemas, Industrial y Eléctrica</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
